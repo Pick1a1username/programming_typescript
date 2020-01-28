@@ -1,0 +1,12 @@
+{
+    "parser":  "@typescript-eslint/parser", 
+    "extends": ["plugin:@typescript-eslint/recommended"],
+    "parserOptions":  {
+        "ecmaVersion":  2015,  
+        "sourceType":  "module" 
+    },
+    "rules":  {
+        "comma-dangle": ["error", "never"],
+        "no-use-before-define": ["error", { "functions": true, "classes": true }]
+    }
+}
