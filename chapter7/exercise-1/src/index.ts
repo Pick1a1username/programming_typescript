@@ -15,7 +15,25 @@ type User = {
     logged: boolean,
     friends: string[]
 }
+
 type UserID = User['id']
+
+class UserNotFoundError extends Error {
+    constructor(...params: any[]) {
+        super(...params)
+        
+        this.name = "UserNotFoundError"
+    }
+}
+
+class IDNotUniqueError extends Error {
+    constructor(...params: any[]) {
+        super(...params)
+        
+        this.name = "IDNotUniqueError"
+    }
+}
+
 
 class API {
     db: User[]
@@ -46,6 +64,12 @@ class API {
                 logged: true,
                 friends: ["1", "2"]    
             },
+            {
+                id: "4",
+                name: "やまだ",
+                logged: true,
+                friends: ["1", "2"]    
+            },
         ]
     }
 
@@ -55,16 +79,26 @@ class API {
             .map( _ => _.id )
     }
 
-    getFriendIDs(userID: UserID): UserID[] {
-        return this.getUserByID(userID).friends
+    getFriendIDs(userID: UserID): UserID[] | UserNotFoundError | IDNotUniqueError {
+        let user = this.getUserByID(userID)
+
+        if ( user instanceof UserNotFoundError ) return user
+        if ( user instanceof IDNotUniqueError ) return user
+
+        return user.friends
     }
 
-    getUserName(userID: UserID): string {
+    getUserName(userID: UserID): string | UserNotFoundError | IDNotUniqueError {
         return this.getUserByID(userID).name
     }
 
-    private getUserByID(userID: UserID): User {
-        return this.db.filter( _ => _.id === userID )[0]
+    private getUserByID(userID: UserID): User | UserNotFoundError | IDNotUniqueError {
+        let users = this.db.filter( _ => _.id === userID )
+
+        if ( users.length < 1 ) return new UserNotFoundError()
+        if ( users.length > 1 ) return new IDNotUniqueError()
+
+        return users[0]
     }
 }
 
@@ -73,4 +107,7 @@ const api = new API()
 
 console.log(api.getLoggedInUser())
 console.log(api.getFriendIDs("1"))
-console.log(api.getUserName("1"))
+console.log(api.getUserName("4"))
+console.log(api.getUserName("5"))
+
+
