@@ -28,7 +28,7 @@ type Commands = {
 // https://github.com/microsoft/TypeScript/issues/31393
 
 class SafeEmitter<
-  Events extends Record<string, any[]>
+  Events extends Record<string, unknown[]>
 > {
   private emitter = new EventEmitter
 
